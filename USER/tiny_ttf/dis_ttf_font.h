@@ -8,7 +8,7 @@
 //typedef unsigned int uint32_t;
 
 typedef struct {
-	stbtt_fontinfo* info;
+	stbtt_fontinfo info;
 	
 	uint8_t* font;		//ttf_file
 	uint32_t font_size;
@@ -22,7 +22,7 @@ typedef struct {
 	int y_board;
 }TTF_TypeDef;
 
-void init_ttf(TTF_TypeDef* ttf_struct, uint8_t* font, uint32_t font_size);
-void ret_str_bitmap(TTF_TypeDef* ttf_struct, uint8_t* bitmap, char* str);
+int init_ttf(TTF_TypeDef* ttf_struct, uint8_t* font, uint32_t font_size);
+void ret_str_bitmap(TTF_TypeDef* ttf_struct, uint8_t* bitmap, int str);
 
 #endif

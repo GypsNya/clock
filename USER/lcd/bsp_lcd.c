@@ -112,9 +112,9 @@ HAL_StatusTypeDef lcd_clk_init(void) {
 	RCC_PeriphCLKInitTypeDef rcc_PreiphCLKInitStruct;
 	
 	rcc_PreiphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
-	rcc_PreiphCLKInitStruct.PLLSAI.PLLSAIN = 104;
+	rcc_PreiphCLKInitStruct.PLLSAI.PLLSAIN = 88;
 	rcc_PreiphCLKInitStruct.PLLSAI.PLLSAIR = 4;
-	rcc_PreiphCLKInitStruct.PLLSAIDivR = 0;//
+	rcc_PreiphCLKInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;//
 	return HAL_RCCEx_PeriphCLKConfig(&rcc_PreiphCLKInitStruct);
 	/*HAL_StatusTypeDef hal_result = HAL_OK;
 	int retry = 0;
@@ -272,74 +272,106 @@ void display_char(char* char_buffer, uint32_t size, uint32_t x, uint32_t y, uint
 	}*/
 }
 
-void display_ttf_char(char* char_buffer, uint32_t size, uint32_t x, uint32_t y, uint32_t color) {
-	TTF_TypeDef ttf_struct;
+int display_ttf_char(TTF_TypeDef* ttf_struct, char* char_buffer, uint32_t x, uint32_t y, uint32_t color) {
 	uint32_t pixel;
 	uint32_t vram_addr = y * LCD_PIXEL_WIDTH + x;
+	int result = 1;
 	int height;int width;
+	int str = 0;
+	//uint16_t* ttf_cache = (uint16_t*)FONT_TTF_CACHE;
+
+	if (is_chinese(char_buffer[0])) {
+		str = (int)char_buffer[1] << 8 | (int)char_buffer[0];
+	} else {
+		str = (int)char_buffer[0];
+	}
 	
-	init_ttf(&ttf_struct, FONT_EN_TTF, size);
-	ret_str_bitmap(&ttf_struct, FONT_TTF_CACHE, char_buffer);
-	height = ttf_struct.y_max - ttf_struct.y_min;
-	width = ttf_struct.x_max - ttf_struct.x_min;
+	ret_str_bitmap(ttf_struct, FONT_TTF_CACHE, str);
+	height = ttf_struct->y_max - ttf_struct->y_min;
+	width = ttf_struct->x_max - ttf_struct->x_min;
 	
 	for(int font_y = 0; font_y<height; font_y++) {
 		for(int font_x = 0; font_x<width; font_x++) {
 			pixel = FONT_TTF_CACHE[font_y * width + font_x];
-			pixel = (pixel & 0x1F << 16)|(pixel & 0x7E0 << 3)|(pixel & 0xF8 >> 11) | 0xFF000000;
+			//pixel = (pixel & 0x1F << 16)|(pixel & 0x7E0 << 3)|(pixel & 0xF800 >> 11) | 0xFF000000;
+			if (pixel == 0xff) {
+				pixel = color;
+			} else if (pixel > 0) {
+				pixel = (uint32_t)(pixel << 24) | 0x00FFFFFF;
+			}
 			VRAM2[vram_addr] = pixel;
+			vram_addr += 1;
 		}
 		vram_addr = vram_addr+LCD_PIXEL_WIDTH-width;
 	}
+	return result;
 }
 
-LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_t color) {
-	uint32_t char_size = 32;
+LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_t color, uint32_t size) {
+	//uint32_t char_size = 256;
+	TTF_TypeDef ttf_struct;
+	int result = 1;
 	uint32_t i = 0;
+	
+	result = init_ttf(&ttf_struct, FONT_EN_TTF, size);
+	if (result == 0) {
+		return LCD_DISPLAY_ERR;
+	}
+
 	while(1) {
 		if(is_str_end(char_buffer[i])) {
 			return LCD_DISPLAY_OK;
 		}
 		
-		display_char(&char_buffer[i], char_size, x, y, color);
+		//display_char(&char_buffer[i], char_size, x, y, color);
+		display_ttf_char(&ttf_struct, &char_buffer[i], x, y, color);
 		
 		if(is_chinese(char_buffer[i])) {
-			if((x + char_size) > LCD_PIXEL_WIDTH) {
+			if((x + size) > LCD_PIXEL_WIDTH) {
 				return LCD_DISPLAY_FLOW;
 			}
 			i += 2;
-			x = x + char_size;
+			x = x + size;
 		} else {
-			if((x + char_size/2) > LCD_PIXEL_WIDTH) {
+			if((x + size/2) > LCD_PIXEL_WIDTH) {
 				return LCD_DISPLAY_FLOW;
 			}
 			i++;
-			x = x + char_size/2;
+			x = x + size/2;
 		}
 	}
 	return LCD_DISPLAY_OK;
 }
 
-LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_t color) {
-	uint32_t char_size = 32;
+LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_t color, uint32_t size) {
+	//uint32_t char_size = 32;
 	uint32_t time_index = 8;
+	TTF_TypeDef ttf_struct;
+	int result = 1;
+	result = init_ttf(&ttf_struct, FONT_EN_TTF, size);
+	if (result == 0) {
+		return LCD_DISPLAY_ERR;
+	}
 	while(1) {
-		if(is_str_end(time_buffer[time_index])) {
-			return LCD_DISPLAY_OK;
-		}
 		for(int num = 0; num < 2; num++) {
-			if((x + char_size/2) > LCD_PIXEL_WIDTH) {
+			if((x + size/2) > LCD_PIXEL_WIDTH) {
 				return LCD_DISPLAY_FLOW;
 			}
-			display_char(&time_buffer[time_index], char_size, x, y, color);
+			display_ttf_char(&ttf_struct, &time_buffer[time_index], x, y, color);
 			time_index++;
-			x = x + char_size/2;
+			x = x + size/2;
 		}
-		if((x + char_size/2) > LCD_PIXEL_WIDTH) {
+		if((x + size/2) > LCD_PIXEL_WIDTH) {
 			return LCD_DISPLAY_FLOW;
 		}
-		display_char(":", char_size, x, y, color);
-		x = x + char_size/2;
+		// if(is_str_end(time_buffer[time_index])) {
+		// 	return LCD_DISPLAY_OK;
+		// }
+		if(time_index == 12) {
+			return LCD_DISPLAY_OK;
+		}
+		display_ttf_char(&ttf_struct, ":", x, y, color);
+		x = x + size/2;
 	}
 	return LCD_DISPLAY_OK;
 }
@@ -369,7 +401,7 @@ LCD_StatusTypeDef printf_week(char* time_buffer, uint32_t x, uint32_t y, uint32_
 	uint32_t char_size = 32;
 	uint32_t time_index = 8;
 
-	if(printf_char("����", x, y, color) != LCD_DISPLAY_OK) {
+	if(printf_char("����", x, y, color, 128) != LCD_DISPLAY_OK) {
 		return LCD_DISPLAY_FLOW;
 	}
 	for(int num = 0; num < 2; num++) {

@@ -190,6 +190,10 @@ void SDIO_IRQHandler(void) {
 	HAL_SD_IRQHandler(&SD_HandleStrcut);
 }
 
+void RTC_Alarm_IRQHandler(void) {
+  HAL_RTC_AlarmIRQHandler(&rtc_handle_struct);
+}
+
 /**
   * @}
   */ 

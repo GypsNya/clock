@@ -63,6 +63,27 @@ void rtc_time_set(void) {
 	HAL_RTCEx_BKUPWrite(&rtc_handle_struct, RTC_BKP_DR0, RTC_BKP_DATA);
 }
 
+HAL_StatusTypeDef rtc_alarm_set(void) {
+	HAL_StatusTypeDef hal_result = HAL_OK;
+	RTC_AlarmTypeDef RTC_AlarmStructure;
+
+	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 0, 3);
+	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
+
+	RTC_AlarmStructure.Alarm = RTC_ALARM_A;
+	RTC_AlarmStructure.AlarmTime.Hours = 0;
+	RTC_AlarmStructure.AlarmTime.Minutes = 0;
+	RTC_AlarmStructure.AlarmTime.Seconds = 0;
+	RTC_AlarmStructure.AlarmMask = RTC_ALARMMASK_ALL & (~RTC_ALRMAR_MSK1);
+	RTC_AlarmStructure.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_WEEKDAY;
+	RTC_AlarmStructure.AlarmDateWeekDay = RTC_WEEKDAY_MONDAY;
+	hal_result = HAL_RTC_SetAlarm_IT(&rtc_handle_struct, &RTC_AlarmStructure, RTC_FORMAT_BIN);
+	if (hal_result != HAL_OK) {
+		return hal_result;
+	}
+	return hal_result;
+}
+
 HAL_StatusTypeDef rtc_init(void) {
 	HAL_StatusTypeDef hal_result = HAL_OK;
 	
@@ -71,7 +92,7 @@ HAL_StatusTypeDef rtc_init(void) {
 		return hal_result;
 	}
 	rtc_time_set();
-	
+
 	return hal_result;
 }
 

@@ -2,10 +2,18 @@
 
 FATFS sd_drive;
 
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
+	char current_time[14];
+	get_rtc_time(current_time);
+	char_continue_clear(192, 200, 3, 256);
+	printf_time(current_time, 192, 200, 0xFFFFFFFF, 256);
+}
+
 int main(void) {
 	UINT load_success_num;
 	FRESULT result;
 	JRESULT p_result;
+	HAL_StatusTypeDef hal_result;
 	MemAllocStatusTypeDef mem_alloc_result;
 	uint32_t mem_size;
 	uint16_t jpg_handle[5];
@@ -47,10 +55,10 @@ int main(void) {
 	if (result != FR_OK) {
 		while(1);
 	}
-	/*result = load("1:/CascadiaCode.ttf", (uint32_t*)FONT_EN_TTF_BASE);
+	result = load("1:/CascadiaCode.ttf", (uint32_t*)FONT_EN_TTF_BASE);
 	if (result != FR_OK) {
 		while(1);
-	}*/
+	}
 
 	if (lcd_init() != HAL_OK) {
 		while(1);
@@ -61,32 +69,18 @@ int main(void) {
 	if (lcd_fill(lcd_layer2_buffer, 0x00000000) != HAL_OK) {
 		while(1);
 	}
-	
-	mem_page_alloc(&jpg_handle[0], 0x258000);
-	mem_page_alloc(&jpg_handle[1], 0x258000);
-	mem_page_alloc(&jpg_handle[2], 0x258000);
-	mem_size = size_of(jpg_handle[0]);
-	jpg_load_buff = jpg_handle[0];
-	p_result = jpg_decode("1:picture/56.jpg");
+	// if (display_ttf_char("A", 128, 100, 100, 0xFF000000) == 0) {
+	// 	lcd_fill_rect(lcd_layer2_buffer, 0, 0, 10, 10, 0xFFFFFFFF);
+	// }
+	//printf_char("1234", 100, 100, 0xFF000000, 128);
+	p_result = jpg_decode("1:picture/1.jpg");
 	if (p_result != JDR_OK) {
 		while(1);
 	}
-	mov_in(jpg_handle[0], (char*)VRAM_BASE, (char*)0x00000000, 0x258000);
-	p_result = jpg_decode("1:picture/21.jpg");
-	if (p_result != JDR_OK) {
+	hal_result = rtc_alarm_set();
+	if(hal_result != HAL_OK) {
 		while(1);
 	}
-	mov_in(jpg_handle[1], (char*)VRAM_BASE, (char*)0x00000000, 0x258000);
-	p_result = jpg_decode("1:picture/43.jpg");
-	if (p_result != JDR_OK) {
-		while(1);
-	}
-	mov_in(jpg_handle[2], (char*)VRAM_BASE, (char*)0x00000000, 0x258000);
-	for(uint32_t i = 0; ;i++) {
-		get_rtc_time(current_time);
-		char_continue_clear(100, 100, 7, 32);
-		printf_time(current_time, 100, 100, 0xFF000000);
-		mov_out(jpg_handle[i%3], (char*)0x00000000, (char*)VRAM_BASE, 0x258000);
-		delay_ms(3000);
-	}
+	//delay_ms(3000);
+	while(1);
 }

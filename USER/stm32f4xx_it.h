@@ -23,6 +23,8 @@
 #include <bsp_systick.h>
 #include <bsp_usart.h>
 #include <bsp_sd.h>
+#include <bsp_rtc.h>
+#include <bsp_lcd.h>
 
 #ifdef __cplusplus
  extern "C" {
@@ -48,6 +50,7 @@ void USART1_IRQHandler(void);
 void DMA2_Stream3_IRQHandler(void);
 void DMA2_Stream6_IRQHandler(void);
 void SDIO_IRQHandler(void);
+void RTC_Alarm_IRQHandler(void);
 
 #ifdef __cplusplus
 }

@@ -8,7 +8,7 @@ BUILD_DIR = build
 TARGET_DIR = target
 
 #c version
-CPP_VER = c99
+CPP_VER = c11
 
 #CPU arch info
 CPU = -mcpu=cortex-m4
@@ -23,9 +23,9 @@ C_DEFS = \
 AS_DEFS = 
 
 #debug switch
-DEBUG = 0
+DEBUG = 1
 #optimized
-OPTIMIZED = 0
+OPT = 
 
 #librarys dir, if have no, empty this value
 LIBDIR = 
@@ -100,12 +100,6 @@ usart/bsp_usart.c \
 tiny_ttf/dis_ttf_font.c \
 
 ########################################
-#ttf
-C_USER_TTF_SOURCE = \
-
-
-TTF_INCLUDE += $(C_INCLUDE)
-########################################
 
 LD_SCRIPT = CHIP_CFG/STM32F429IGTx_FLASH.ld
 
@@ -128,13 +122,10 @@ endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
 
-OPT = 
-
-CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDE) $(OPT) -std=c11 -Wall -fdata-sections -ffunction-sections
-TTF_CFLAGS += $(MCU) $(C_DEFS) $(TTF_INCLUDE) $(OPT) -std=c11 -Wall -fdata-sections -ffunction-sections
+CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDE) $(OPT) -std=$(CPP_VER) -Wall -fdata-sections -ffunction-sections
 
 ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwraf-2
+CFLAGS += -g -gdwarf-2
 endif
 
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"

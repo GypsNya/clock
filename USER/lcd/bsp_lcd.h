@@ -114,6 +114,7 @@ void lcd_draw_point(uint32_t layer_address, uint32_t x, uint32_t y, uint32_t col
 
 typedef enum {
 	LCD_DISPLAY_OK = 0,
+	LCD_DISPLAY_ERR,
 	LCD_DISPLAY_FLOW,
 }LCD_StatusTypeDef;
 
@@ -121,11 +122,11 @@ typedef enum {
 #define char_continue_clear(x, y, char_num, size)	lcd_fill_rect(lcd_layer2_buffer, x, y, char_num*size, size, 0x00000000)
 
 void display_char(char* char_buffer, uint32_t size, uint32_t x, uint32_t y, uint32_t color);
-void display_ttf_char(char* char_buffer, uint32_t size, uint32_t x, uint32_t y, uint32_t color);
-LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_t color);
+int display_ttf_char(TTF_TypeDef* ttf_struct, char* char_buffer, uint32_t x, uint32_t y, uint32_t color);
+LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_t color, uint32_t size);
 
 //time
-LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_t color);
+LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_t color, uint32_t size);
 LCD_StatusTypeDef printf_date(char* time_buffer, uint32_t x, uint32_t y, uint32_t color);
 LCD_StatusTypeDef printf_week(char* time_buffer, uint32_t x, uint32_t y, uint32_t color);
 

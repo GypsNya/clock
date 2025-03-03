@@ -38,10 +38,13 @@
 //BACEUP
 #define RTC_BKP_DATA		0x32F2
 
+extern RTC_HandleTypeDef rtc_handle_struct;
+
 HAL_StatusTypeDef rtc_clk_init(void);
 HAL_StatusTypeDef rtc_init(void);
 
 void rtc_time_set(void);
+HAL_StatusTypeDef rtc_alarm_set(void);
 void get_rtc_time(char* time_buffer);
 
 #endif
