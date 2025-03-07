@@ -103,10 +103,7 @@ HAL_StatusTypeDef rtc_init(uint8_t year, uint8_t month, uint8_t date, uint8_t we
 	if(hal_result != HAL_OK) {
 		return hal_result;
 	}
-<<<<<<< HEAD
 	rtc_time_set(year, month, date, weekday, hours, minutes, seconds);
-=======
->>>>>>> 01d07c1 (feat: connect internet.)
 
 	return hal_result;
 }
