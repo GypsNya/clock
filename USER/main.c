@@ -10,14 +10,10 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 }
 
 int main(void) {
-	UINT load_success_num;
 	FRESULT result;
 	JRESULT p_result;
 	HAL_StatusTypeDef hal_result;
 	MemAllocStatusTypeDef mem_alloc_result;
-	uint32_t mem_size;
-	uint16_t jpg_handle[5];
-	char current_time[14];
 	
 	/*uint32_t page_num = PAGE_NUM;
 	uint32_t theory_page_num = THEORY_PAGE_NUM;
@@ -35,7 +31,10 @@ int main(void) {
 	gpio_init();
 	usart_init();
 	sdram_init();
-	rtc_init();
+	rtc_init(25, 3, 7, 5, 15, 59, 0);
+	//rtc_time_set(25, 3, 7, 5, 15, 59, 0);
+	delay_ms(1000*60*2);
+	rtc_init(25, 3, 7, 5, 23, 59, 0);
 	
 	mem_page_init();
 	

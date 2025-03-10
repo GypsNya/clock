@@ -33,6 +33,11 @@ HAL_StatusTypeDef rtc_clk_init(void) {
 	
 	__HAL_RCC_RTC_ENABLE();
 	HAL_RTC_WaitForSynchro(&rtc_handle_struct);
+
+	hal_result = HAL_RTC_DeInit(&rtc_handle_struct);
+	if(hal_result != HAL_OK) {
+		return hal_result;
+	}
 	
 	rtc_handle_struct.Init.AsynchPrediv = async_pre_div;
 	rtc_handle_struct.Init.SynchPrediv = sync_pre_div;
@@ -44,20 +49,27 @@ HAL_StatusTypeDef rtc_clk_init(void) {
 	return hal_result;
 }
 
-void rtc_time_set(void) {
+void rtc_time_set(uint8_t year, uint8_t month, uint8_t date, uint8_t weekday, uint8_t hours, uint8_t minutes, uint8_t seconds) {
 	RTC_TimeTypeDef rtc_time_struct;
 	RTC_DateTypeDef rtc_date_struct;
+	uint8_t am_pm;
+
+	if(hours > 12) {
+		am_pm = RTC_HOURFORMAT12_PM;
+	} else {
+		am_pm = RTC_HOURFORMAT12_AM;
+	}
 	
-	rtc_time_struct.Hours = HOURS;
-	rtc_time_struct.Minutes = MINUTES;
-	rtc_time_struct.Seconds = SECONDS;
-	rtc_time_struct.TimeFormat = RTC_HOURFORMAT12_AM;
+	rtc_time_struct.Hours = hours;
+	rtc_time_struct.Minutes = minutes;
+	rtc_time_struct.Seconds = seconds;
+	rtc_time_struct.TimeFormat = am_pm;
 	HAL_RTC_SetTime(&rtc_handle_struct, &rtc_time_struct, RTC_FORMAT_BIN);
 	
-	rtc_date_struct.WeekDay = WEEKDAY;
-	rtc_date_struct.Month = MONTH;
-	rtc_date_struct.Date = DATE;
-	rtc_date_struct.Year = YEAR;
+	rtc_date_struct.WeekDay = weekday;
+	rtc_date_struct.Month = month;
+	rtc_date_struct.Date = date;
+	rtc_date_struct.Year = year;
 	HAL_RTC_SetDate(&rtc_handle_struct, &rtc_date_struct, RTC_FORMAT_BIN);
 	
 	HAL_RTCEx_BKUPWrite(&rtc_handle_struct, RTC_BKP_DR0, RTC_BKP_DATA);
@@ -84,14 +96,14 @@ HAL_StatusTypeDef rtc_alarm_set(void) {
 	return hal_result;
 }
 
-HAL_StatusTypeDef rtc_init(void) {
+HAL_StatusTypeDef rtc_init(uint8_t year, uint8_t month, uint8_t date, uint8_t weekday, uint8_t hours, uint8_t minutes, uint8_t seconds) {
 	HAL_StatusTypeDef hal_result = HAL_OK;
 	
 	hal_result = rtc_clk_init();
 	if(hal_result != HAL_OK) {
 		return hal_result;
 	}
-	rtc_time_set();
+	rtc_time_set(year, month, date, weekday, hours, minutes, seconds);
 
 	return hal_result;
 }
