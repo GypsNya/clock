@@ -41,9 +41,9 @@
 extern RTC_HandleTypeDef rtc_handle_struct;
 
 HAL_StatusTypeDef rtc_clk_init(void);
-HAL_StatusTypeDef rtc_init(void);
+HAL_StatusTypeDef rtc_init(uint8_t year, uint8_t month, uint8_t date, uint8_t weekday, uint8_t hours, uint8_t minutes, uint8_t seconds);
 
-void rtc_time_set(void);
+void rtc_time_set(uint8_t year, uint8_t month, uint8_t date, uint8_t weekday, uint8_t hours, uint8_t minutes, uint8_t seconds);
 HAL_StatusTypeDef rtc_alarm_set(void);
 void get_rtc_time(char* time_buffer);
 
