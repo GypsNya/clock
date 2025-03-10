@@ -173,9 +173,16 @@ void SysTick_Handler(void)
 void USART1_IRQHandler(void) {
 	uint8_t ch;
 	if (__HAL_USART_GET_FLAG(&USART_HandleStruct, USART_FLAG_RXNE) != RESET) {
-		ch = (uint16_t)READ_REG(USART_HandleStruct.Instance->DR);
+		ch = (uint8_t)READ_REG(USART_HandleStruct.Instance->DR);
+    esp8266_fram_struct.buff[esp8266_fram_struct.length] = ch;
+    esp8266_fram_struct.length++;
 		//WRITE_REG(USART_HandleStruct.Instance->DR, ch);
 	}
+
+  if (__HAL_USART_GET_FLAG(&USART_HandleStruct, USART_FLAG_IDLE) == SET) {
+    esp8266_fram_struct.idle = 1;
+    ch = (uint8_t)READ_REG(USART_HandleStruct.Instance->DR);
+  }
 }
 
 void DMA2_Stream3_IRQHandler(void) {

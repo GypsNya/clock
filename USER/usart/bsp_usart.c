@@ -40,6 +40,16 @@ void usart_init() {
 	__HAL_USART_ENABLE_IT(&USART_HandleStruct, USART_IT_RXNE);
 }
 
+void usart_send_string(uint8_t* str) {
+	unsigned int i = 0;
+	do{
+		while(__HAL_USART_GET_FLAG(&USART_HandleStruct, USART_FLAG_TXE) == RESET);
+		//HAL_USART_Transmit(&USART_HandleStruct, (uint8_t *)(str + i), 1, 1000);
+		USART_HandleStruct.Instance->DR = (uint8_t)(*(str+i) & (uint8_t)0xFF);
+		i++;
+	}while(*(str + i) != '\0');
+}
+
 // int _write(int ch, char* pBuffer, int len) {
 // 	UNUSED(ch);
 // 	HAL_USART_Transmit(&USART_HandleStruct, (uint8_t *)pBuffer, len, 0xFFFF);

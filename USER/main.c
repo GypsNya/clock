@@ -13,7 +13,10 @@ int main(void) {
 	FRESULT result;
 	JRESULT p_result;
 	HAL_StatusTypeDef hal_result;
+<<<<<<< HEAD
 	MemAllocStatusTypeDef mem_alloc_result;
+=======
+>>>>>>> 01d07c1 (feat: connect internet.)
 	
 	/*uint32_t page_num = PAGE_NUM;
 	uint32_t theory_page_num = THEORY_PAGE_NUM;
@@ -31,10 +34,15 @@ int main(void) {
 	gpio_init();
 	usart_init();
 	sdram_init();
+<<<<<<< HEAD
 	rtc_init(25, 3, 7, 5, 15, 59, 0);
 	//rtc_time_set(25, 3, 7, 5, 15, 59, 0);
 	delay_ms(1000*60*2);
 	rtc_init(25, 3, 7, 5, 23, 59, 0);
+=======
+	rtc_init();
+	rtc_time_set(25, 3, 4, 2, 15, 25, 0);
+>>>>>>> 01d07c1 (feat: connect internet.)
 	
 	mem_page_init();
 	

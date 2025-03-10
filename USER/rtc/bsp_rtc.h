@@ -23,15 +23,15 @@
 
 //time
 #define RTC_HOUR_MODE		RTC_HOURFORMAT_24
-#define HOURS				9
-#define MINUTES				50
-#define SECONDS				00
+//#define HOURS				9
+//#define MINUTES				50
+//#define SECONDS				00
 
 //date
-#define WEEKDAY				6
-#define DATE				22
-#define MONTH				2
-#define YEAR				25
+//#define WEEKDAY				6
+//#define DATE				22
+//#define MONTH				2
+//#define YEAR				25
 
 //#define RTC_FORMAT_BIN
 

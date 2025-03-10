@@ -14,6 +14,8 @@
 //#include <stdio.h>
 #include <stm32f4xx_hal_usart.h>
 
+extern char* usart_recv_buff;
+
 #define usart_port_clk_en()	__HAL_RCC_GPIOA_CLK_ENABLE()
 #define usart_pin_port		GPIOA
 #define tx_pin				GPIO_PIN_9
@@ -27,5 +29,7 @@ extern USART_HandleTypeDef USART_HandleStruct;
 
 void usart_pin_init(void);
 void usart_init(void);
+
+void usart_send_string(uint8_t* str);
 
 #endif

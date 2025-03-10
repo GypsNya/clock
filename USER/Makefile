@@ -60,6 +60,7 @@ C_INCLUDE = \
 -Iusart \
 -I. \
 -I tiny_ttf \
+-I net \
 
 #source
 C_LIB_SOURCE = \
@@ -98,6 +99,7 @@ $(wildcard sd/*.c) \
 systick/bsp_systick.c\
 usart/bsp_usart.c \
 tiny_ttf/dis_ttf_font.c \
+net/bsp_esp8266.c \
 
 ########################################
 
