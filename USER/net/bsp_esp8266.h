@@ -5,6 +5,10 @@
 #include <bsp_usart.h>
 #include <bsp_led.h>
 
+#define DNS1	"114.114.114.114"
+#define DNS2	"223.5.5.5"
+#define DNS3	"8.8.8.8"
+
 typedef enum{
 	INEQU = 0,
 	EQU,
@@ -13,7 +17,7 @@ typedef enum{
 #define esp_port_clk_en()	__HAL_RCC_GPIOA_CLK_ENABLE()
 #define esp_pin_port		GPIOA
 #define esp_rst_pin			GPIO_PIN_0
-#define esp_en_pin			GPIO_PIN_1
+#define esp_en_pin			GPIO_PIN_3
 #define ENABLE		1
 #define DISABLE		0
 
@@ -24,7 +28,7 @@ typedef enum{
 #define esp_ch_reset()		digital(esp_pin_port, esp_en_pin, esp_low)
 #define esp_rst_reset()		digital(esp_pin_port, esp_rst_pin, esp_low)
 
-#define FRAME_LENGTH		1024
+#define FRAME_LENGTH		2048
 extern struct Esp8266_Fram_TypeDef {
 	char buff[FRAME_LENGTH];
 	uint32_t length;
@@ -73,6 +77,12 @@ typedef enum {
 	DISCONNECTED = 4,
 }LINK_StatusTypeDef;
 
+typedef enum {
+	DNS_AUTOMATIC_SET = 0,
+	DNS_USER_SET,
+	DNS_CURRENT_SET,
+} DNSHandle_TypeDef;
+
 void ESP8266_Init(void);
 void ESP8266_Rst(void);
 AT_StatusTypeDef ESP8266_Cmd(char* cmd, char* expect_reply_1, char* expect_reply_2, uint32_t wiat_time);
@@ -82,12 +92,14 @@ AT_StatusTypeDef ESP8266_Net_Mode_Choose(NetModeChoose mode);
 AT_StatusTypeDef ESP8266_JoinAP(char* name, char* pwd);
 AT_StatusTypeDef ESP8266_BuildAP(char* name, char* pwd, AP_PsdMode_TypeDef mode);
 AT_StatusTypeDef ESP8266_Link_Server(Net_Pro_TypeDef protocol, char* ip, char* port, ID_NO_TypeDef id);
+AT_StatusTypeDef ESP8266_Close_Link(void);
 AT_StatusTypeDef Enable_MultipleId(bool able);
 AT_StatusTypeDef ESP8266_UnvarnishSend(void);
 AT_StatusTypeDef ESP8266_ExitUnvarnishSend (void);
 LINK_StatusTypeDef Get_LinkStatus(void);
-AT_StatusTypeDef ESP8266_SendString(bool EnUnvarnishTx, char* str, uint32_t len, ID_NO_TypeDef id);
+AT_StatusTypeDef ESP8266_SendString(bool EnUnvarnishTx, char* str, ID_NO_TypeDef id);
 AT_StatusTypeDef ESP8266_DHCP_CUR(void);
+AT_StatusTypeDef ESP8266_DNS(DNSHandle_TypeDef dns_handle);
 
 //bool str_cmp(char* src_str, char* tar_str);
 //void ESP8266_SendData(void);

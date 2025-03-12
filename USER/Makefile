@@ -99,7 +99,7 @@ $(wildcard sd/*.c) \
 systick/bsp_systick.c\
 usart/bsp_usart.c \
 tiny_ttf/dis_ttf_font.c \
-net/bsp_esp8266.c \
+$(wildcard net/*.c) \
 
 ########################################
 

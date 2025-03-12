@@ -35,6 +35,7 @@
 #include <tjpgd.h>
 #include <bsp_rtc.h>
 #include <bsp_esp8266.h>
+#include <api.h>
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

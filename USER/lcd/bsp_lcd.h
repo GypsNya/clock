@@ -118,8 +118,9 @@ typedef enum {
 	LCD_DISPLAY_FLOW,
 }LCD_StatusTypeDef;
 
-#define char_clear(x, y, size)						lcd_fill_rect(lcd_layer2_buffer, x, y, size, size, 0x00000000)
-#define char_continue_clear(x, y, char_num, size)	lcd_fill_rect(lcd_layer2_buffer, x, y, char_num*size, size, 0x00000000)
+#define char_clear(x, y, size)							lcd_fill_rect(lcd_layer2_buffer, x, y, size, size, 0x00000000)
+#define char_continue_clear(x, y, char_num, size)		lcd_fill_rect(lcd_layer2_buffer, x, y, char_num*size, size, 0x00000000)
+#define en_char_continue_clear(x, y, char_num, size)	lcd_fill_rect(lcd_layer2_buffer, x, y, char_num*size/2, size, 0x00000000)
 
 void display_char(char* char_buffer, uint32_t size, uint32_t x, uint32_t y, uint32_t color);
 int display_ttf_char(TTF_TypeDef* ttf_struct, char* char_buffer, uint32_t x, uint32_t y, uint32_t color);

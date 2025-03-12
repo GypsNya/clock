@@ -31,13 +31,10 @@ int main(void) {
 	gpio_init();
 	usart_init();
 	sdram_init();
-	rtc_init(25, 3, 7, 5, 15, 59, 0);
-	//rtc_time_set(25, 3, 7, 5, 15, 59, 0);
-	delay_ms(1000*60*2);
-	rtc_init(25, 3, 7, 5, 23, 59, 0);
-	
-	mem_page_init();
-	
+	//rtc_init(25, 3, 7, 5, 23, 59, 0);
+
+	fetch_time("TDS", "1905391447");
+
 	result = f_mount(&sd_drive, "1:", 1);
 	if (result != FR_OK) {
 		while(1);
