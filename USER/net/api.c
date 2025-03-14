@@ -2,44 +2,70 @@
 #include <bsp_lcd.h>
 
 //https://quan.suning.com/getSysTime.do
-AT_StatusTypeDef fetch_time(char* wifi_name, char* wifi_pwd) {
+AT_StatusTypeDef fetch_time(char* wifi_name, char* wifi_pwd, char* time_buf) {
 	AT_StatusTypeDef result = AT_OK;
+	uint32_t client_id;
+	char* time;
 
-	result = ESP8266_Net_Mode_Choose(STA_AP);
+	ESP8266_Rst();
+
+	result = ESP8266_AT_Test();
+	//printf_char(esp8266_fram_struct.buff, 0, 12*2, 0xFFFFFFFF, 12);
 	if(result != AT_OK){
 		return result;
 	}
-	printf_char(esp8266_fram_struct.buff, 12*0, 0, 0xFF000000, 12);
 
-	result = ESP8266_DNS(DNS_USER_SET);
+	result = ESP8266_Net_Mode_Choose(STA);
+	//printf_char(esp8266_fram_struct.buff, 0, 12*3, 0xFFFFFFFF, 12);
 	if(result != AT_OK){
 		return result;
 	}
-	printf_char(esp8266_fram_struct.buff, 12*1, 0, 0xFF000000, 12);
 
 	result = ESP8266_JoinAP(wifi_name, wifi_pwd);
+	//printf_char(esp8266_fram_struct.buff, 0, 12*4, 0xFFFFFFFF, 12);
 	if(result != AT_OK){
 		return result;
 	}
-	printf_char(esp8266_fram_struct.buff, 12*2, 0, 0xFF000000, 12);
 
-	result = ESP8266_Link_Server(TCP, "quan.suning.com", "80", Single_ID_0);
+	result = ESP8266_get_self_ip();
+	//printf_char(esp8266_fram_struct.buff, 0, 12*5, 0xFFFFFFFF, 12);
 	if(result != AT_OK){
 		return result;
 	}
-	printf_char(esp8266_fram_struct.buff, 12*3, 0, 0xFF000000, 12);
 
-	result = ESP8266_SendString(0, "GET /getSysTime.do HTTP/1.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\nAccept-Encoding: gzip, deflate, br, zstd\r\nAccept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6\r\nCache-Control: max-age=0\r\nConnection: keep-alive", Single_ID_0);
+	/* result = ESP8266_Link_Server(TCP, "192.168.2.23", "80", Single_ID_0);
+	printf_char(esp8266_fram_struct.buff, 0, 12*5, 0xFFFFFFFF, 12);
 	if(result != AT_OK){
 		return result;
-	}
-	printf_char(esp8266_fram_struct.buff, 12*4, 0, 0xFF000000, 12);
+	} */
 
-	result = ESP8266_Close_Link();
+	result = Enable_MultipleId(1);
+	//printf_char(esp8266_fram_struct.buff, 0, 12*6, 0xFFFFFFFF, 12);
 	if(result != AT_OK){
 		return result;
 	}
-	printf_char(esp8266_fram_struct.buff, 12*5, 0, 0xFF000000, 12);
+
+	result = ESP8266_as_Server(1, 80);
+	//printf_char(esp8266_fram_struct.buff, 0, 12*7, 0xFFFFFFFF, 12);
+	if(result != AT_OK){
+		return result;
+	}
+
+	lcd_fill_rect(lcd_layer2_buffer, 0, 12*1, 3, 3, 0xFF000000);
+
+	result = ESP8266_RecvString(&client_id, &time);
+	//printf_char(esp8266_fram_struct.buff, 0, 12*8, 0xFFFFFFFF, 12);
+	if(result != AT_OK){
+		return result;
+	}
+	for(int i = 0; i<8; i++) {
+		time_buf[i] = ((char*)time)[i];
+	}
+	//printf_char(time_buf, 0, 12*12, 0xFFFFFFFF, 18);
+	lcd_fill_rect(lcd_layer2_buffer, 0, 12*1, 3, 3, 0x00000000);
+
+	ESP8266_SendString(0, "OK", client_id);
+	//printf_char(esp8266_fram_struct.buff, 0, 12*9, 0xFFFFFFFF, 12);
 
 	return result;
 }

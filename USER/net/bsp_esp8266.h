@@ -91,15 +91,20 @@ AT_StatusTypeDef ESP8266_AT_Test(void);
 AT_StatusTypeDef ESP8266_Net_Mode_Choose(NetModeChoose mode);
 AT_StatusTypeDef ESP8266_JoinAP(char* name, char* pwd);
 AT_StatusTypeDef ESP8266_BuildAP(char* name, char* pwd, AP_PsdMode_TypeDef mode);
+AT_StatusTypeDef ESP8266_get_self_ip(void);
 AT_StatusTypeDef ESP8266_Link_Server(Net_Pro_TypeDef protocol, char* ip, char* port, ID_NO_TypeDef id);
 AT_StatusTypeDef ESP8266_Close_Link(void);
+AT_StatusTypeDef ESP8266_as_Server(bool able, uint32_t port);
 AT_StatusTypeDef Enable_MultipleId(bool able);
 AT_StatusTypeDef ESP8266_UnvarnishSend(void);
 AT_StatusTypeDef ESP8266_ExitUnvarnishSend (void);
 LINK_StatusTypeDef Get_LinkStatus(void);
 AT_StatusTypeDef ESP8266_SendString(bool EnUnvarnishTx, char* str, ID_NO_TypeDef id);
+AT_StatusTypeDef ESP8266_RecvString(uint32_t* id, char** data_star_pos);
 AT_StatusTypeDef ESP8266_DHCP_CUR(void);
 AT_StatusTypeDef ESP8266_DNS(DNSHandle_TypeDef dns_handle);
+
+AT_StatusTypeDef ESP8266_Com(char* cmd, char* ok_msg, char* err_msg, uint32_t wiat_time);
 
 //bool str_cmp(char* src_str, char* tar_str);
 //void ESP8266_SendData(void);

@@ -79,7 +79,7 @@ HAL_StatusTypeDef rtc_alarm_set(void) {
 	HAL_StatusTypeDef hal_result = HAL_OK;
 	RTC_AlarmTypeDef RTC_AlarmStructure;
 
-	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 0, 3);
+	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 1, 3);
 	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
 
 	RTC_AlarmStructure.Alarm = RTC_ALARM_A;
