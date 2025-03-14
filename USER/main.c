@@ -54,7 +54,6 @@ int main(void) {
 	if (lcd_fill(lcd_layer2_buffer, 0x00000000) != HAL_OK) {
 		while(1);
 	}
-	lcd_fill_rect(lcd_layer2_buffer, 0, 200, 10, 10, 0xFFFFFFFF);
 
 	for(int i = 0; i<3; i++){
 		if (fetch_time("TDS_5G", "1905391447", sync_time) != AT_OK) {
