@@ -51,7 +51,7 @@ AT_StatusTypeDef fetch_time(char* wifi_name, char* wifi_pwd, char* time_buf) {
 		return result;
 	}
 
-	lcd_fill_rect(lcd_layer2_buffer, 0, 12*1, 3, 3, 0xFF000000);
+	lcd_fill_rect(lcd_layer2_buffer, 0, 12*1, 3, 3, 0xFFFFFFFF);
 
 	result = ESP8266_RecvString(&client_id, &time);
 	//printf_char(esp8266_fram_struct.buff, 0, 12*8, 0xFFFFFFFF, 12);

@@ -104,6 +104,10 @@ HAL_StatusTypeDef rtc_init(uint8_t year, uint8_t month, uint8_t date, uint8_t we
 		return hal_result;
 	}
 	rtc_time_set(year, month, date, weekday, hours, minutes, seconds);
+	hal_result = rtc_alarm_set();
+	if(hal_result != HAL_OK) {
+		return hal_result;
+	}
 
 	return hal_result;
 }

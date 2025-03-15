@@ -63,10 +63,6 @@ int main(void) {
 			printf_char("retry", 0, 500, 0xFFFFFFFF, 32);
 		} else {
 			rtc_init(sync_time[0], sync_time[1], sync_time[2], sync_time[3], sync_time[4], sync_time[5], sync_time[6]);
-			hal_result = rtc_alarm_set();
-			if(hal_result != HAL_OK) {
-				while(1);
-			}
 			en_char_continue_clear(0, 500, 17, 32);
 			HAL_RTC_AlarmAEventCallback(&rtc_handle_struct);
 			break;
@@ -85,9 +81,9 @@ int main(void) {
 		}
 		ESP8266_SendString(0, "OK", client_id);
 		rtc_init(sync_time[0], sync_time[1], sync_time[2], sync_time[3], sync_time[4], sync_time[5], sync_time[6]);
-		hal_result = rtc_alarm_set();
+/* 		hal_result = rtc_alarm_set();
 		if(hal_result != HAL_OK) {
 			while(1);
-		}
+		} */
 	}
 }
