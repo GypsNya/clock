@@ -13,31 +13,17 @@ int main(void) {
 	FRESULT result;
 	JRESULT p_result;
 	HAL_StatusTypeDef hal_result;
-	MemAllocStatusTypeDef mem_alloc_result;
-	
-	/*uint32_t page_num = PAGE_NUM;
-	uint32_t theory_page_num = THEORY_PAGE_NUM;
-	uint32_t page_map_start = PAGE_MAP_START;
-	uint32_t page_info_map_start = PAGE_INFO_MAP_START;
-	uint32_t page_info_start = PAGE_INFO_TAB_START;
-	uint32_t page_start = PAGE_START;
-	
-	uint32_t page_map_size = PAGE_MAP_SIZE;
-	uint32_t page_info_map_size = PAGE_INFO_MAP_SIZE;
-	uint32_t page_info_tab_size = PAGE_INFO_TAB_SIZE;*/
+	char* time;
+	char sync_time[8];
+	uint8_t client_id;
 	
 	HSE_SetSysClock(25, 360, 2, 8);
 	systick_init();
 	gpio_init();
 	usart_init();
 	sdram_init();
-	rtc_init(25, 3, 7, 5, 15, 59, 0);
-	//rtc_time_set(25, 3, 7, 5, 15, 59, 0);
-	delay_ms(1000*60*2);
-	rtc_init(25, 3, 7, 5, 23, 59, 0);
-	
-	mem_page_init();
-	
+	//rtc_init(25, 3, 7, 5, 23, 59, 0);
+
 	result = f_mount(&sd_drive, "1:", 1);
 	if (result != FR_OK) {
 		while(1);
@@ -68,18 +54,36 @@ int main(void) {
 	if (lcd_fill(lcd_layer2_buffer, 0x00000000) != HAL_OK) {
 		while(1);
 	}
-	// if (display_ttf_char("A", 128, 100, 100, 0xFF000000) == 0) {
-	// 	lcd_fill_rect(lcd_layer2_buffer, 0, 0, 10, 10, 0xFFFFFFFF);
-	// }
-	//printf_char("1234", 100, 100, 0xFF000000, 128);
+
+	for(int i = 0; i<3; i++){
+		if (fetch_time("TDS_5G", "1905391447", sync_time) != AT_OK) {
+			printf_char("fetch time failed", 0, 500, 0xFFFFFFFF, 32);
+			delay_ms(200);
+			en_char_continue_clear(0, 500, 17, 32);
+			printf_char("retry", 0, 500, 0xFFFFFFFF, 32);
+		} else {
+			rtc_init(sync_time[0], sync_time[1], sync_time[2], sync_time[3], sync_time[4], sync_time[5], sync_time[6]);
+			en_char_continue_clear(0, 500, 17, 32);
+			//HAL_RTC_AlarmAEventCallback(&rtc_handle_struct);
+			break;
+		}
+		delay_ms(1000);
+	}
+
 	p_result = jpg_decode("1:picture/1.jpg");
 	if (p_result != JDR_OK) {
 		while(1);
 	}
-	hal_result = rtc_alarm_set();
-	if(hal_result != HAL_OK) {
-		while(1);
+	while (1) {
+		ESP8266_RecvString(&client_id, &time);
+		for(int i = 0; i<8; i++) {
+			sync_time[i] = ((char*)time)[i];
+		}
+		ESP8266_SendString(0, "OK", client_id);
+		rtc_init(sync_time[0], sync_time[1], sync_time[2], sync_time[3], sync_time[4], sync_time[5], sync_time[6]);
+/* 		hal_result = rtc_alarm_set();
+		if(hal_result != HAL_OK) {
+			while(1);
+		} */
 	}
-	//delay_ms(3000);
-	while(1);
 }
