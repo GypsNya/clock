@@ -4,7 +4,7 @@
 //https://quan.suning.com/getSysTime.do
 AT_StatusTypeDef fetch_time(char* wifi_name, char* wifi_pwd, char* time_buf) {
 	AT_StatusTypeDef result = AT_OK;
-	uint32_t client_id;
+	uint8_t client_id;
 	char* time;
 
 	ESP8266_Rst();

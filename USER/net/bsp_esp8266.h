@@ -100,7 +100,7 @@ AT_StatusTypeDef ESP8266_UnvarnishSend(void);
 AT_StatusTypeDef ESP8266_ExitUnvarnishSend (void);
 LINK_StatusTypeDef Get_LinkStatus(void);
 AT_StatusTypeDef ESP8266_SendString(bool EnUnvarnishTx, char* str, ID_NO_TypeDef id);
-AT_StatusTypeDef ESP8266_RecvString(uint32_t* id, char** data_star_pos);
+AT_StatusTypeDef ESP8266_RecvString(uint8_t* id, char** data_star_pos);
 AT_StatusTypeDef ESP8266_DHCP_CUR(void);
 AT_StatusTypeDef ESP8266_DNS(DNSHandle_TypeDef dns_handle);
 

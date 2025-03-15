@@ -113,7 +113,7 @@ AT_StatusTypeDef ESP8266_AT_Test(void) {
 	esp_rst_set();
 	delay_ms(2000);
 	for(int i = 0; i<10; i++) {
-		if (ESP8266_Cmd("AT\r\n", "OK", NULL, 500)) {
+		if (ESP8266_Com("AT\r\n", "OK", "ERROR", 500)) {
 			return result;
 		}
 		ESP8266_Rst();
@@ -125,11 +125,11 @@ AT_StatusTypeDef ESP8266_AT_Test(void) {
 AT_StatusTypeDef ESP8266_Net_Mode_Choose(NetModeChoose mode) {
 	switch (mode) {
 		case STA:
-			return ESP8266_Cmd("AT+CWMODE=1\r\n", "OK", 0, 2500);
+			return ESP8266_Com("AT+CWMODE=1\r\n", "OK", "ERROR", 2500);
 		case AP:
-			return ESP8266_Cmd("AT+CWMODE=2\r\n", "OK", 0, 2500);
+			return ESP8266_Com("AT+CWMODE=2\r\n", "OK", "ERROR", 2500);
 		case STA_AP:
-			return ESP8266_Cmd("AT+CWMODE=3\r\n", "OK", 0, 2500);
+			return ESP8266_Com("AT+CWMODE=3\r\n", "OK", "ERROR", 2500);
 		default:
 			return AT_ERR;
 	}
@@ -139,7 +139,7 @@ AT_StatusTypeDef ESP8266_JoinAP(char* name, char* pwd) {
 	char cmd_buf[128];
 	//sprintf(cmd_buf, "AT+CWJAP=\"", "name", "\",\"", "pwd", "\"");
 	sprintf(cmd_buf, "AT+CWJAP=\"%s\",\"%s\"\r\n", name, pwd);
-	return ESP8266_Cmd(cmd_buf, "OK", NULL, 10000);
+	return ESP8266_Com(cmd_buf, "OK", "ERROR", 10000);
 }
 
 AT_StatusTypeDef ESP8266_BuildAP(char* name, char* pwd, AP_PsdMode_TypeDef mode) {
@@ -148,10 +148,10 @@ AT_StatusTypeDef ESP8266_BuildAP(char* name, char* pwd, AP_PsdMode_TypeDef mode)
 	//sprintf(mode_buf, "%d", mode);
 	sprintf(cmd_buf, "AT+CWSAP=\"%s\",\"%s\",1,%d\r\n", name, pwd, mode);
 	//sprintf(cmd_buf, "AT+CWJAP=\"", "name", "\",\"", "pwd", "\",1,", mode_buf);
-	return ESP8266_Cmd(cmd_buf, "OK", NULL, 5000);
+	return ESP8266_Com(cmd_buf, "OK", "ERROR", 5000);
 }
 AT_StatusTypeDef ESP8266_get_self_ip(void) {
-	return ESP8266_Cmd("AT+CIFSR\r\n", "OK", NULL, 5000);
+	return ESP8266_Com("AT+CIFSR\r\n", "OK", "ERROR", 5000);
 }
 
 AT_StatusTypeDef ESP8266_Link_Server(Net_Pro_TypeDef protocol, char* ip, char* port, ID_NO_TypeDef id) {
@@ -169,13 +169,13 @@ AT_StatusTypeDef ESP8266_Link_Server(Net_Pro_TypeDef protocol, char* ip, char* p
 	}
 	if (id<5) sprintf(cmd_buf, "AT+CIPSTART=%d,%s\r\n", id, pre_buf);
 	else sprintf(cmd_buf, "AT+CIPSTART=%s\r\n", pre_buf);
-	return ESP8266_Cmd(cmd_buf, "OK", "CONNECT", 4000);
+	return ESP8266_Com(cmd_buf, "OK", "ERROR", 4000);
 }
 
 AT_StatusTypeDef ESP8266_Close_Link(void) {
 	char cmd_buff[128];
 	AT_StatusTypeDef result = AT_OK;
-	result = ESP8266_Cmd("AT+CIPCLOSE\r\n", "OK", 0, 100);
+	result = ESP8266_Com("AT+CIPCLOSE\r\n", "OK", "ERROR", 100);
 	return result;
 }
 
@@ -184,9 +184,9 @@ AT_StatusTypeDef ESP8266_as_Server(bool able, uint32_t port) {
 	AT_StatusTypeDef result = AT_OK;
 	if (able == 1) {
 		sprintf(cmd_buff, "AT+CIPSERVER=1,%d\r\n", port);
-		result = ESP8266_Cmd(cmd_buff, "OK", 0, 1000);
+		result = ESP8266_Com(cmd_buff, "OK", "ERROR", 1000);
 	} else {
-		result = ESP8266_Cmd("AT+CIPSERVER=0\r\n", "OK", 0, 100);
+		result = ESP8266_Com("AT+CIPSERVER=0\r\n", "OK", "ERROR", 100);
 	}
 	return result;
 }
@@ -194,7 +194,7 @@ AT_StatusTypeDef ESP8266_as_Server(bool able, uint32_t port) {
 AT_StatusTypeDef Enable_MultipleId(bool able) {
 	char cmd_buf[16];
 	sprintf(cmd_buf, "AT+CIPMUX=%d\r\n", able);
-	return ESP8266_Cmd(cmd_buf, "OK", NULL, 500);
+	return ESP8266_Com(cmd_buf, "OK", "ERROR", 500);
 }
 
 AT_StatusTypeDef ESP8266_UnvarnishSend(void) {
@@ -209,7 +209,7 @@ AT_StatusTypeDef ESP8266_ExitUnvarnishSend (void) {
 }
 
 LINK_StatusTypeDef Get_LinkStatus(void) {
-	if(ESP8266_Cmd("AT+CIPSTATUS\r\n", "OK", NULL, 500)) {
+	if(ESP8266_Com("AT+CIPSTATUS\r\n", "OK", "ERROR", 500)) {
 		if(strstr(esp8266_fram_struct.buff, "STATUS:2\r\n")) {
 			return 2;
 		} else if (strstr(esp8266_fram_struct.buff, "STATUS:3\r\n")) {
@@ -224,7 +224,7 @@ LINK_StatusTypeDef Get_LinkStatus(void) {
 }
 
 AT_StatusTypeDef ESP8266_DHCP_CUR(void) {
-	return ESP8266_Cmd("AT+CWDHCP_CUR=1,1\r\n", "OK", NULL, 500);
+	return ESP8266_Com("AT+CWDHCP_CUR=1,1\r\n", "OK", "ERROR", 500);
 }
 
 /* AT_StatusTypeDef ESP8266_SendString(bool able, char* str, uint32_t len, ID_NO_TypeDef id) {
@@ -265,7 +265,7 @@ AT_StatusTypeDef ESP8266_SendString(bool EnUnvarnishTx, char* str, ID_NO_TypeDef
 	return result;
 }
 
-AT_StatusTypeDef ESP8266_RecvString(uint32_t* id, char** data_star_pos) {
+AT_StatusTypeDef ESP8266_RecvString(uint8_t* id, char** data_star_pos) {
 	AT_StatusTypeDef result = AT_OK;
 	esp8266_fram_struct.length = 0;
 	esp8266_fram_struct.idle = 0;
@@ -278,7 +278,7 @@ AT_StatusTypeDef ESP8266_RecvString(uint32_t* id, char** data_star_pos) {
 			} else {
 				*data_star_pos+=4;
 				esp8266_fram_struct.buff[esp8266_fram_struct.length] = '\0';
-				*id = (uint32_t)*data_star_pos[1] - 0x30;
+				*id = (uint8_t)((*data_star_pos)[1]) - 0x30;
 				*data_star_pos = strstr(*data_star_pos, ":") + 1;
 				if(*data_star_pos == 0) {
 					return AT_ERR;
@@ -306,14 +306,14 @@ AT_StatusTypeDef ESP8266_DNS(DNSHandle_TypeDef dns_handle) {
 	AT_StatusTypeDef result = AT_OK;
 	switch (dns_handle) {
 		case DNS_AUTOMATIC_SET:
-			result = ESP8266_Cmd("AT+CIPDNS_DEF=0\r\n", "OK", 0, 2500);
+			result = ESP8266_Com("AT+CIPDNS_DEF=0\r\n", "OK", "ERROR", 2500);
 			break;
 		case DNS_USER_SET:
 			sprintf(cmd_buff, "AT+CIPDNS_DEF=1,\"%s\",\"%s\"\r\n", DNS1, DNS2);
-			result = ESP8266_Cmd(cmd_buff, "OK", 0, 2500);
+			result = ESP8266_Com(cmd_buff, "OK", "ERROR", 2500);
 			break;
 		case DNS_CURRENT_SET:
-			result = ESP8266_Cmd("AT+CIPDNS_DEF?\r\n", "OK", 0, 2500);
+			result = ESP8266_Com("AT+CIPDNS_DEF?\r\n", "OK", "ERROR", 2500);
 			break;
 		default:
 			result = AT_ERR;
@@ -325,7 +325,7 @@ AT_StatusTypeDef ESP8266_DNS(DNSHandle_TypeDef dns_handle) {
 
 
 AT_StatusTypeDef ESP8266_Com(char* cmd, char* ok_msg, char* err_msg, uint32_t wiat_time) {
-	AT_StatusTypeDef result = AT_OK;
+	//AT_StatusTypeDef result = AT_OK;
 	esp8266_fram_struct.length = 0;
 	esp8266_fram_struct.idle = 0;
 	esp8266_fram_struct.buff[esp8266_fram_struct.length] = '\0';
@@ -336,16 +336,18 @@ AT_StatusTypeDef ESP8266_Com(char* cmd, char* ok_msg, char* err_msg, uint32_t wi
 			esp8266_fram_struct.buff[esp8266_fram_struct.length] = '\0';
 			if(strstr(esp8266_fram_struct.buff, ok_msg) == 0) {
 				if(strstr(esp8266_fram_struct.buff, err_msg) == 0) {
-					return AT_ERR;
+					esp8266_fram_struct.length = 0;
+					esp8266_fram_struct.idle = 0;
+					esp8266_fram_struct.buff[esp8266_fram_struct.length] = '\0';
 				} else {
 					return AT_ERR;
 				}
 			} else {
-				return result;
+				return AT_OK;
 			}
 		}
 		delay_ms(10);
 	}
 	
-	return result;
+	return AT_ERR;
 }

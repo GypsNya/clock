@@ -86,7 +86,7 @@ HAL_StatusTypeDef rtc_alarm_set(void) {
 	RTC_AlarmStructure.AlarmTime.Hours = 0;
 	RTC_AlarmStructure.AlarmTime.Minutes = 0;
 	RTC_AlarmStructure.AlarmTime.Seconds = 0;
-	RTC_AlarmStructure.AlarmMask = RTC_ALARMMASK_ALL & (~RTC_ALRMAR_MSK1);
+	RTC_AlarmStructure.AlarmMask = RTC_ALARMMASK_ALL & (~RTC_ALARMMASK_SECONDS);
 	RTC_AlarmStructure.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_WEEKDAY;
 	RTC_AlarmStructure.AlarmDateWeekDay = RTC_WEEKDAY_MONDAY;
 	hal_result = HAL_RTC_SetAlarm_IT(&rtc_handle_struct, &RTC_AlarmStructure, RTC_FORMAT_BIN);

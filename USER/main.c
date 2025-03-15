@@ -15,7 +15,7 @@ int main(void) {
 	HAL_StatusTypeDef hal_result;
 	char* time;
 	char sync_time[8];
-	uint32_t client_id;
+	uint8_t client_id;
 	
 	HSE_SetSysClock(25, 360, 2, 8);
 	systick_init();
@@ -64,7 +64,7 @@ int main(void) {
 		} else {
 			rtc_init(sync_time[0], sync_time[1], sync_time[2], sync_time[3], sync_time[4], sync_time[5], sync_time[6]);
 			en_char_continue_clear(0, 500, 17, 32);
-			HAL_RTC_AlarmAEventCallback(&rtc_handle_struct);
+			//HAL_RTC_AlarmAEventCallback(&rtc_handle_struct);
 			break;
 		}
 		delay_ms(1000);
