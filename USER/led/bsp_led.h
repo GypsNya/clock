@@ -3,8 +3,8 @@
 
 #include <stm32f4xx_hal.h>
 
-#ifndef __CORE_CM7_H
-#define __CORE_CM7_H
+#ifndef __CORE_CM4_H
+#define __CORE_CM4_H
 #endif
 
 #include <stm32f429xx.h>

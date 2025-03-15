@@ -60,6 +60,7 @@ C_INCLUDE = \
 -Iusart \
 -I. \
 -I tiny_ttf \
+-I net \
 
 #source
 C_LIB_SOURCE = \
@@ -70,6 +71,7 @@ C_LIB_SOURCE = \
 ../LIB/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
 ../LIB/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
 ../LIB/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
+../LIB/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 ../LIB/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c \
 ../LIB/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c \
 ../LIB/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c \
@@ -98,6 +100,7 @@ $(wildcard sd/*.c) \
 systick/bsp_systick.c\
 usart/bsp_usart.c \
 tiny_ttf/dis_ttf_font.c \
+$(wildcard net/*.c) \
 
 ########################################
 

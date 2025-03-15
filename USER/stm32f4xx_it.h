@@ -25,6 +25,7 @@
 #include <bsp_sd.h>
 #include <bsp_rtc.h>
 #include <bsp_lcd.h>
+#include <bsp_esp8266.h>
 
 #ifdef __cplusplus
  extern "C" {

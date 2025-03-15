@@ -28,7 +28,7 @@ void ret_str_bitmap(TTF_TypeDef* ttf_struct, uint8_t* bitmap, int str) {
 	int left_side_bearing;
 	int x_min; int y_min; int x_max; int y_max;
 	int y_board;
-	int code_point = stbtt_FindGlyphIndex(&ttf_struct->info, (int)str);
+	//int code_point = stbtt_FindGlyphIndex(&ttf_struct->info, (int)str);
 	stbtt_GetCodepointHMetrics(&ttf_struct->info, str, &advance_width, &left_side_bearing);
 	stbtt_GetCodepointBitmapBox(&ttf_struct->info, str, ttf_struct->scale, ttf_struct->scale, &ttf_struct->x_min, &ttf_struct->y_min, &ttf_struct->x_max, &ttf_struct->y_max);
 	y_board = y_min + ttf_struct->scale + y_max;

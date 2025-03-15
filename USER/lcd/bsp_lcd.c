@@ -289,6 +289,7 @@ int display_ttf_char(TTF_TypeDef* ttf_struct, char* char_buffer, uint32_t x, uin
 	ret_str_bitmap(ttf_struct, FONT_TTF_CACHE, str);
 	height = ttf_struct->y_max - ttf_struct->y_min;
 	width = ttf_struct->x_max - ttf_struct->x_min;
+	vram_addr += ttf_struct->y_min*LCD_PIXEL_WIDTH + ttf_struct->x_min;
 	
 	for(int font_y = 0; font_y<height; font_y++) {
 		for(int font_x = 0; font_x<width; font_x++) {
@@ -297,7 +298,7 @@ int display_ttf_char(TTF_TypeDef* ttf_struct, char* char_buffer, uint32_t x, uin
 			if (pixel == 0xff) {
 				pixel = color;
 			} else if (pixel > 0) {
-				pixel = (uint32_t)(pixel << 24) | 0x00FFFFFF;
+				pixel = (uint32_t)(pixel << 24) | (color & 0x00FFFFFF);
 			}
 			VRAM2[vram_addr] = pixel;
 			vram_addr += 1;
@@ -312,7 +313,7 @@ LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_
 	TTF_TypeDef ttf_struct;
 	int result = 1;
 	uint32_t i = 0;
-	
+	y = y+size-size/3;
 	result = init_ttf(&ttf_struct, FONT_EN_TTF, size);
 	if (result == 0) {
 		return LCD_DISPLAY_ERR;
@@ -348,6 +349,7 @@ LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_
 	uint32_t time_index = 8;
 	TTF_TypeDef ttf_struct;
 	int result = 1;
+	y = y+size-size/3;
 	result = init_ttf(&ttf_struct, FONT_EN_TTF, size);
 	if (result == 0) {
 		return LCD_DISPLAY_ERR;
