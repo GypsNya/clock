@@ -23,6 +23,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+#include <stdio.h>
+
 #include <bsp_rcc.h>
 #include <bsp_led.h>
 #include <bsp_systick.h>

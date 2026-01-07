@@ -58,14 +58,17 @@ AT_StatusTypeDef fetch_time(char* wifi_name, char* wifi_pwd, char* time_buf) {
 	if(result != AT_OK){
 		return result;
 	}
-	for(int i = 0; i<8; i++) {
-		time_buf[i] = ((char*)time)[i];
+	if ((char*)time[0] == 'T' && (char*)time[1] == 'I') {
+		time += 2;
+		for(int i = 0; i<8; i++) {
+			time_buf[i] = ((char*)time)[i];
+		}
+		lcd_fill_rect(lcd_layer2_buffer, 0, 12*1, 3, 3, 0x00000000);
+		ESP8266_SendString(0, "OK", client_id);
+		return result;
+	} else {
+		lcd_fill_rect(lcd_layer2_buffer, 0, 12*1, 3, 3, 0x00000000);
+		ESP8266_SendString(0, "OK", client_id);
+		return AT_ERR;
 	}
-	//printf_char(time_buf, 0, 12*12, 0xFFFFFFFF, 18);
-	lcd_fill_rect(lcd_layer2_buffer, 0, 12*1, 3, 3, 0x00000000);
-
-	ESP8266_SendString(0, "OK", client_id);
-	//printf_char(esp8266_fram_struct.buff, 0, 12*9, 0xFFFFFFFF, 12);
-
-	return result;
 }

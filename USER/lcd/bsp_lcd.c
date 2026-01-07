@@ -1,7 +1,5 @@
 #include <bsp_lcd.h>
-
-//#include <bsp_fsmc.h>
-//#include <bsp_led.h>
+//#include <bsp_rtc.h>
 
 LTDC_HandleTypeDef ltdc_HandleStruct;
 
@@ -217,46 +215,30 @@ void display_char(char* char_buffer, uint32_t size, uint32_t x, uint32_t y, uint
 	//uint32_t char_bitmap;
 	uint32_t addr = y * LCD_PIXEL_WIDTH + x;
 	char* font_hub;
-	char* font_en_hub;
+	//char* font_en_hub;
 	
 	if (size == 32) {
 		font_hub = FONT;
-		font_en_hub = FONT_EN;
+		//font_en_hub = FONT_EN;
 	} else if (size == 72) {
+		font_hub = FONT;
 		//font_hub = FONT_72;
 		//font_en_hub = FONT_EN_72;
 	}
 	
 	char_code = char_code_pos(char_buffer, size);
-	//char_code = (*char_buffer > 0x7f ? (((*char_buffer-0xa1)*94+*(char_buffer+1)-0xa1)*size*size/8):*char_buffer);
-	if(char_code < 0x3F80) {
-		//font_hub = FONT_EN;
-		for(int row = 0; row < size/2*size; row++) {
-			if(((font_en_hub[char_code] << (row % 8))&0x80) > 0) {
-				VRAM2[addr] = color;
-			}
-			if(row%8 == 7) {
-				char_code += 1;
-			}
-			if(row % (size/2) == size/2 - 1) {
-				addr += LCD_PIXEL_WIDTH - size/2;
-			}
-			addr+=1;
+	//font_hub = FONT;
+	for(int row = 0; row < size*size; row++) {
+		if(((font_hub[char_code] << (row % 8))&0x80) > 0) {
+			VRAM2[addr] = color;
 		}
-	} else {
-		//font_hub = FONT;
-		for(int row = 0; row < size*size; row++) {
-			if(((font_hub[char_code] << (row % 8))&0x80) > 0) {
-				VRAM2[addr] = color;
-			}
-			if(row%8 == 7) {
-				char_code += 1;
-			}
-			if(row % size == size - 1) {
-				addr += LCD_PIXEL_WIDTH - size;
-			}
-			addr+=1;
+		if(row%8 == 7) {
+			char_code += 1;
 		}
+		if(row % size == size - 1) {
+			addr += LCD_PIXEL_WIDTH - size;
+		}
+		addr+=1;
 	}
 	/*for(int row = 0; row < size; row++) {
 		for(int column = 0; column < size; column++) {
@@ -281,7 +263,8 @@ int display_ttf_char(TTF_TypeDef* ttf_struct, char* char_buffer, uint32_t x, uin
 	//uint16_t* ttf_cache = (uint16_t*)FONT_TTF_CACHE;
 
 	if (is_chinese(char_buffer[0])) {
-		str = (int)char_buffer[1] << 8 | (int)char_buffer[0];
+		str = (((int)char_buffer[0]) << 16) | ((int)char_buffer[1] << 8) | (int)char_buffer[2];
+		//str = (int)char_buffer[1] << 8 | (int)char_buffer[0];
 	} else {
 		str = (int)char_buffer[0];
 	}
@@ -309,29 +292,33 @@ int display_ttf_char(TTF_TypeDef* ttf_struct, char* char_buffer, uint32_t x, uin
 }
 
 LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_t color, uint32_t size) {
-	//uint32_t char_size = 256;
-	TTF_TypeDef ttf_struct;
+	TTF_TypeDef en_ttf_struct;
+	//TTF_TypeDef ch_ttf_struct;
 	int result = 1;
 	uint32_t i = 0;
 	y = y+size-size/3;
-	result = init_ttf(&ttf_struct, FONT_EN_TTF, size);
+	result = init_ttf(&en_ttf_struct, FONT_EN_TTF, size);
 	if (result == 0) {
 		return LCD_DISPLAY_ERR;
 	}
+	/* result = init_ttf(&ch_ttf_struct, FONT, size);
+	if (result == 0) {
+		return LCD_DISPLAY_ERR;
+	} */
 
 	while(1) {
 		if(is_str_end(char_buffer[i])) {
 			return LCD_DISPLAY_OK;
 		}
-		
-		//display_char(&char_buffer[i], char_size, x, y, color);
-		display_ttf_char(&ttf_struct, &char_buffer[i], x, y, color);
-		
+
+		display_ttf_char(&en_ttf_struct, &char_buffer[i], x, y, color);
+
 		if(is_chinese(char_buffer[i])) {
+			//display_ttf_char(&ch_ttf_struct, &char_buffer[i], x, y, color);
 			if((x + size) > LCD_PIXEL_WIDTH) {
 				return LCD_DISPLAY_FLOW;
 			}
-			i += 2;
+			i += 3;
 			x = x + size;
 		} else {
 			if((x + size/2) > LCD_PIXEL_WIDTH) {
@@ -345,7 +332,6 @@ LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_
 }
 
 LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_t color, uint32_t size) {
-	//uint32_t char_size = 32;
 	uint32_t time_index = 8;
 	TTF_TypeDef ttf_struct;
 	int result = 1;
@@ -366,9 +352,6 @@ LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_
 		if((x + size/2) > LCD_PIXEL_WIDTH) {
 			return LCD_DISPLAY_FLOW;
 		}
-		// if(is_str_end(time_buffer[time_index])) {
-		// 	return LCD_DISPLAY_OK;
-		// }
 		if(time_index == 12) {
 			return LCD_DISPLAY_OK;
 		}
@@ -379,16 +362,22 @@ LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_
 }
 
 LCD_StatusTypeDef printf_date(char* time_buffer, uint32_t x, uint32_t y, uint32_t color) {
-	char unit_char[6] = "������";
-	uint32_t char_size = 32;
+	TTF_TypeDef ttf_struct;
+	uint8_t unit_char[7] = {0xC4, 0xEA, 0xD4, 0xC2, 0xC8, 0xD5, 0x00};
+	uint32_t char_size = 72;
 	uint32_t time_index = 0;
+	int result = 1;
+	result = init_ttf(&ttf_struct, FONT_EN_TTF, char_size);
+	if (result == 0) {
+		return LCD_DISPLAY_ERR;
+	}
 	
 	for(uint32_t unit_index = 0; unit_index < 6; unit_index+=2) {
 		for(int num = 0; num < 2; num++) {
-			if((x + char_size/2) > LCD_PIXEL_WIDTH) {
+			if((x + char_size) > LCD_PIXEL_WIDTH) {
 				return LCD_DISPLAY_FLOW;
 			}
-			display_char(&time_buffer[time_index], char_size, x, y, color);
+			display_ttf_char(&ttf_struct, &time_buffer[time_index], x, y+char_size-char_size/3+char_size/5, color);
 			time_index++;
 			x = x + char_size/2;
 		}
@@ -396,23 +385,19 @@ LCD_StatusTypeDef printf_date(char* time_buffer, uint32_t x, uint32_t y, uint32_
 			return LCD_DISPLAY_FLOW;
 		}
 		display_char(&unit_char[unit_index], char_size, x, y, color);
+		x = x + char_size;
 	}
 	return LCD_DISPLAY_OK;
 }
-LCD_StatusTypeDef printf_week(char* time_buffer, uint32_t x, uint32_t y, uint32_t color) {
-	uint32_t char_size = 32;
-	uint32_t time_index = 8;
+LCD_StatusTypeDef printf_week(uint8_t* time_buffer, uint32_t x, uint32_t y, uint32_t color) {
+	uint32_t char_size = 72;
+	uint8_t unit_char[16] = {0xC8, 0xD5, 0xD2, 0xBB, 0xB6, 0xFE, 0xC8, 0xFD, 0xCB, 0xC4, 0xCE, 0xE5, 0xC1, 0xF9, 0xD6, 0xDC};
 
-	if(printf_char("����", x, y, color, 128) != LCD_DISPLAY_OK) {
+	display_char(&unit_char[7*2], char_size, x, y, color);
+	x += char_size;
+	if(x > LCD_PIXEL_WIDTH) {
 		return LCD_DISPLAY_FLOW;
 	}
-	for(int num = 0; num < 2; num++) {
-		if((x + char_size/2) > LCD_PIXEL_WIDTH) {
-			return LCD_DISPLAY_FLOW;
-		}
-		display_char(&time_buffer[time_index], char_size, x, y, color);
-		time_index++;
-		x = x + char_size/2;
-	}
+	display_char(&unit_char[time_buffer[3]*2], char_size, x, y, color);
 	return LCD_DISPLAY_OK;
 }

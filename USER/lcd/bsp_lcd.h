@@ -81,7 +81,7 @@ void lcd_draw_point(uint32_t layer_address, uint32_t x, uint32_t y, uint32_t col
 
 //display chinese character.
 //#define FONT_SIZE	32			//character size.
-#define FONT_CODE	GB2312		//character code. ref font_code.
+#define FONT_CODE	UTF8		//character code. ref font_code.
 
 #if FONT_CODE == GB2312
 	#define char_code_pos(first_byte_addr, font_size)		(*(char*)first_byte_addr > 0x7f ? (((*(char*)first_byte_addr-0xa1)*94+*(first_byte_addr+1)-0xa1)*font_size*font_size/8):(*(char*)first_byte_addr)*font_size*font_size/2/8)
@@ -129,6 +129,6 @@ LCD_StatusTypeDef printf_char(char* char_buffer, uint32_t x, uint32_t y, uint32_
 //time
 LCD_StatusTypeDef printf_time(char* time_buffer, uint32_t x, uint32_t y, uint32_t color, uint32_t size);
 LCD_StatusTypeDef printf_date(char* time_buffer, uint32_t x, uint32_t y, uint32_t color);
-LCD_StatusTypeDef printf_week(char* time_buffer, uint32_t x, uint32_t y, uint32_t color);
+LCD_StatusTypeDef printf_week(uint8_t* time_buffer, uint32_t x, uint32_t y, uint32_t color);
 
 #endif

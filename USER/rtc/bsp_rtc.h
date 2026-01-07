@@ -39,12 +39,16 @@
 #define RTC_BKP_DATA		0x32F2
 
 extern RTC_HandleTypeDef rtc_handle_struct;
+extern char sync_time[8];
+extern uint8_t sync_time_flag;
 
 HAL_StatusTypeDef rtc_clk_init(void);
 HAL_StatusTypeDef rtc_init(uint8_t year, uint8_t month, uint8_t date, uint8_t weekday, uint8_t hours, uint8_t minutes, uint8_t seconds);
 
 void rtc_time_set(uint8_t year, uint8_t month, uint8_t date, uint8_t weekday, uint8_t hours, uint8_t minutes, uint8_t seconds);
-HAL_StatusTypeDef rtc_alarm_set(void);
+HAL_StatusTypeDef rtc_alarm_set(uint8_t sec);
 void get_rtc_time(char* time_buffer);
+
+void set_rtc_offset_time(void);
 
 #endif
